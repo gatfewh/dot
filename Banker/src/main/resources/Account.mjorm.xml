@@ -1,0 +1,7 @@
+<descriptors>
+    <object class="oops.nwiz.dot.banker.protocol.Account">
+        <property name="objectID" id="true" auto="true"/>
+        <property name="credit"/>
+        <property name="accountID"/>
+    </object>
+</descriptors>
