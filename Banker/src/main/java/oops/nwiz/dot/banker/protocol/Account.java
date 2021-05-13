@@ -56,6 +56,9 @@ public class Account extends PortableRemoteObject implements IAccount {
     }
 
     public static Account fromDocument(Document document) throws RemoteException {
+        if (document == null) {
+            return null;
+        }
         Account account = new Account();
         account.setCredit(new BigDecimal(document.getDouble(Vocabulary.CREDIT)));
         account.setAccountID(document.getString(Vocabulary.ACCOUNT_ID));
@@ -65,6 +68,9 @@ public class Account extends PortableRemoteObject implements IAccount {
 
     public static Document toDocument(IAccount account) throws RemoteException {
         Document document = new Document();
+        if (account == null) {
+            return document;
+        }
         document.put(Vocabulary.ACCOUNT_ID, account.getAccountID());
         document.put(Vocabulary.CREDIT, account.getCredit());
         return document;
