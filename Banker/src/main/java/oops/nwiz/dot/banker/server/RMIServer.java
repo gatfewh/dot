@@ -9,9 +9,13 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.rmi.PortableRemoteObject;
 
+/**
+ * The RMIServer
+ */
 public class RMIServer {
     public static void main(String args[]) {
         try {
+            /* setup */
             IBankService bankerService = BankService.getInstance();
             Context initialNamingContext = new InitialContext(RMISetting.defaults());
             PortableRemoteObject.exportObject(bankerService);

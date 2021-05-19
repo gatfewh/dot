@@ -29,7 +29,10 @@ public class Vocabulary {
      * The constant CREDIT.
      */
     public static final String CREDIT     = "credit";
-
+    /**
+     * The constant PASSWORD.
+     */
+    public static final String PASSWORD   = "password";
     /**
      * The constant BANKER_SERVICE.
      */
