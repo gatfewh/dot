@@ -1,14 +1,11 @@
 package oops.nwiz.dot.banker.protocol;
 
-import com.mongodb.*;
-import com.mongodb.client.FindIterable;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
 import oops.nwiz.dot.banker.common.Vocabulary;
-import org.bson.Document;
-import org.bson.conversions.Bson;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
+import java.sql.*;
+import java.util.Random;
 
 
 /**
@@ -19,47 +16,59 @@ import java.rmi.RemoteException;
  */
 public class BankService implements IBankService {
 
+    private Connection connection;
     private static IBankService service;
-    private MongoCollection collection;
 
-    /**
-     * Instantiates a new BankService.
-     * This default constructor initialize collection with the one which containing all accounts.
-     */
     public BankService() {
-        MongoClient client = new MongoClient();
-        MongoDatabase banker = client.getDatabase(Vocabulary.BANKER);
-        collection = banker.getCollection(Vocabulary.ACCOUNT_S);
-    }
-
-    private static Bson buildAccountIDQueryBlock(String accountID) {
-        Document bson = new Document();
-        bson.put(Vocabulary.ACCOUNT_ID, accountID);
-        return bson;
-    }
-
-    private static Bson buildVerifyQuery(String accountID) {
-        Document bson = (Document) buildAccountIDQueryBlock(accountID);
-        return bson;
+        try {
+            Class.forName("com.mysql.jdbc.Driver");
+            connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/banker", "root", "");
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println("数据库连接失败");
+        }
     }
 
     @Override
     public IAccount getAccount(String accountID) throws RemoteException {
-        FindIterable results = collection.find(buildVerifyQuery(accountID));
-        return Account.fromDocument((Document) results.first());
+        Statement stmt = null;
+        BigDecimal credit;
+        try {
+            stmt = connection.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT credit FROM account WHERE account_id = '" + accountID + "';");
+            if (rs.next()) {
+                // 成功时返回新的账户实例
+                credit = rs.getBigDecimal(Vocabulary.CREDIT);
+                return new Account(accountID, credit, this);
+            } else {
+                // 否则随机创建一个新的账户
+                Random random = new Random();
+                credit = BigDecimal.valueOf(random.nextInt(710118));
+                stmt.execute("INSERT INTO account VALUES (" + accountID + ", " + credit + ");");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RemoteException("失败: 操作数据库时遭遇致命错误");
+        }
+        return new Account(accountID, credit, this);
     }
 
     @Override
     public void update(IAccount account) throws RemoteException {
-        Document newAccount = Account.toDocument(account);
-        collection.findOneAndUpdate(buildAccountIDQueryBlock(account.getAccountID()), newAccount);
+        Statement stmt = null;
+        try {
+            stmt = connection.createStatement();
+            stmt.execute("UPDATE account SET credit = " + account.getCredit() + "WHERE account_id = '" + account.getAccountID() + "';");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**
-     * A very lazy singleton implementation.
+     * 一个非常懒的单例用法
      * @return the instance
      */
-    public static IBankService getInstance() {
+    synchronized public static IBankService getInstance() {
         if (service == null) {
             service = new BankService();
         }

@@ -4,7 +4,9 @@ import javax.naming.Context;
 import java.util.Hashtable;
 
 /**
- * The RMI settings used to create InitialContext in both RMIServer and clients.
+ * The RMI Settings
+ * 这些设置在运行时加载, 以免除在执行时写一长串命令行参数的痛苦
+ * 同时保证客户端和服务器用的配置能被同时更新
  */
 public class RMISetting {
     static private Hashtable<String, String> settings;

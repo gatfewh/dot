@@ -5,9 +5,8 @@ import java.rmi.RemoteException;
 
 /**
  * The interface IBankService.
- * In this project, IBankService has only one implementation, i.e., {@link BankService}.
- * And the RMI-IIOP mechanism itself is the only reason why this interface actually exists,
- * just like {@link IAccount} and {@link Account}.
+ * 在这个工程里, 这个接口只有一个实现, i.e., {@link BankService}.
+ * RMI-IIOP 机制本身就是这个接口存在的全部意义.
  */
 public interface IBankService extends Remote {
     /**

@@ -1,16 +1,11 @@
 package oops.nwiz.dot.banker.protocol;
 
-
-import oops.nwiz.dot.banker.common.Vocabulary;
-import org.bson.Document;
-
 import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import javax.rmi.PortableRemoteObject;
 
 public class Account extends PortableRemoteObject implements IAccount {
 
-    private String objectID;
     private String accountID;
     private BigDecimal credit;
     private IBankService service;
@@ -21,6 +16,12 @@ public class Account extends PortableRemoteObject implements IAccount {
 
     public Account(IBankService service) throws RemoteException {
         super();
+        this.service = service;
+    }
+
+    public Account(String accountID, BigDecimal credit, IBankService service) throws RemoteException {
+        this.accountID = accountID;
+        this.credit = credit;
         this.service = service;
     }
 
@@ -54,28 +55,6 @@ public class Account extends PortableRemoteObject implements IAccount {
             }
         }
     }
-
-    public static Account fromDocument(Document document) throws RemoteException {
-        if (document == null) {
-            return null;
-        }
-        Account account = new Account();
-        account.setCredit(new BigDecimal(document.getDouble(Vocabulary.CREDIT)));
-        account.setAccountID(document.getString(Vocabulary.ACCOUNT_ID));
-        account.setService(BankService.getInstance());
-        return account;
-    }
-
-    public static Document toDocument(IAccount account) throws RemoteException {
-        Document document = new Document();
-        if (account == null) {
-            return document;
-        }
-        document.put(Vocabulary.ACCOUNT_ID, account.getAccountID());
-        document.put(Vocabulary.CREDIT, account.getCredit());
-        return document;
-    }
-
     @Override
     public void acceptTransfer(BigDecimal total) throws RemoteException {
         setCredit(getCredit().add(total));
@@ -84,23 +63,10 @@ public class Account extends PortableRemoteObject implements IAccount {
     @Override
     public String toString() {
         return "Account{" +
-                "objectID='" + objectID + '\'' +
                 ", accountID='" + accountID + '\'' +
                 ", credit=" + credit +
                 ", service=" + service +
                 '}';
-    }
-
-    public String getObjectID() {
-        return objectID;
-    }
-
-    public void setObjectID(String objectID) {
-        this.objectID = objectID;
-    }
-
-    public void setAccountID(String accountID) {
-        this.accountID = accountID;
     }
 
     public void setCredit(BigDecimal credit) throws RemoteException {

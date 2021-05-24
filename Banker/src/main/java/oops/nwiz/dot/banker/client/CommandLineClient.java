@@ -7,7 +7,13 @@ import oops.nwiz.dot.banker.protocol.IBankService;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
+import java.math.BigDecimal;
 
+
+/**
+ * The type Command line client.
+ * 简易的命令行版本的客户端
+ */
 public class CommandLineClient {
     public static void  main( String args[] ) {
         Context ic;
@@ -16,7 +22,7 @@ public class CommandLineClient {
         try {
             ic = new InitialContext(RMISetting.defaults());
             service = (IBankService) ic.lookup(Vocabulary.BANKER_SERVICE);
-            System.out.println("CommandLineClient: Got service.");
+            System.out.println("CommandLineClient: 已连接远程服务.");
             hi = service.getAccount("112358");
             System.out.println(String.format("Account: %s, credit: %s", hi.getAccountID(), hi.getCredit()));
             ic.close();
