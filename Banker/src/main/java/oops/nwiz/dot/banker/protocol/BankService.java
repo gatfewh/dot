@@ -1,5 +1,6 @@
 package oops.nwiz.dot.banker.protocol;
 
+import oops.nwiz.dot.banker.common.MySQLSettings;
 import oops.nwiz.dot.banker.common.Vocabulary;
 
 import java.math.BigDecimal;
@@ -9,20 +10,21 @@ import java.util.Random;
 
 
 /**
- * The BankService is the only implementation of {@link IBankService}, just like {@link Account}.
- * BankService serves as Data Access Layer.
- * Object-Relational Mapping
- * Thanks to the application, all these
+ * BankService 是接口 {@link IBankService}的唯一实现.
  */
 public class BankService implements IBankService {
 
     private Connection connection;
     private static IBankService service;
 
+    /**
+     * Instantiates a new Bank service.
+     */
     public BankService() {
         try {
-            Class.forName("com.mysql.jdbc.Driver");
-            connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/banker", "root", "");
+            Class.forName(MySQLSettings.DRIVER);
+            connection = DriverManager.getConnection
+                    (MySQLSettings.URL, MySQLSettings.USER, MySQLSettings.PASSWORD);
         } catch (Exception e) {
             e.printStackTrace();
             System.err.println("数据库连接失败");
@@ -34,6 +36,7 @@ public class BankService implements IBankService {
         Statement stmt = null;
         BigDecimal credit;
         try {
+            // 查询
             stmt = connection.createStatement();
             ResultSet rs = stmt.executeQuery("SELECT credit FROM account WHERE account_id = '" + accountID + "';");
             if (rs.next()) {
@@ -50,9 +53,16 @@ public class BankService implements IBankService {
             e.printStackTrace();
             throw new RemoteException("失败: 操作数据库时遭遇致命错误");
         }
+        // 无论如何返回一个对象
         return new Account(accountID, credit, this);
     }
 
+    /**
+     * 把IAccount的实例在客户端操作完成之后的变化写回数据库
+     * 仅供IAccount实例调用
+     * @param account the account
+     * @throws RemoteException
+     */
     @Override
     public void update(IAccount account) throws RemoteException {
         Statement stmt = null;

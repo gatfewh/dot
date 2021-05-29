@@ -29,8 +29,7 @@ public interface IAccount extends Remote {
     BigDecimal getCredit() throws RemoteException;
 
     /**
-     * Transfer to specified account.
-     *
+     * 转出到指定账户
      * @param accountID the account iD
      * @param total the total
      * @throws RemoteException when the damned RMI mechanism runs into any trouble.
@@ -38,10 +37,15 @@ public interface IAccount extends Remote {
     void       transfer(String accountID, BigDecimal total) throws RemoteException;
 
     /**
-     * Accept transfer.
-     *
+     * 接受转入
      * @param total the total
      * @throws RemoteException the remote exception
      */
     void       acceptTransfer(BigDecimal total) throws RemoteException;
+
+    /**
+     * 将该实例发生的所有变化写会远程服务器
+     * @throws RemoteException the remote exception
+     */
+    void       confirm() throws RemoteException;
 }

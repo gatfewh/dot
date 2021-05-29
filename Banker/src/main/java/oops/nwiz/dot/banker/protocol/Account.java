@@ -4,20 +4,16 @@ import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import javax.rmi.PortableRemoteObject;
 
+
+/**
+ * The type Account.
+ * 方法的解释参考IAccount
+ */
 public class Account extends PortableRemoteObject implements IAccount {
 
     private String accountID;
     private BigDecimal credit;
     private IBankService service;
-
-    public Account() throws RemoteException {
-        super();
-    }
-
-    public Account(IBankService service) throws RemoteException {
-        super();
-        this.service = service;
-    }
 
     public Account(String accountID, BigDecimal credit, IBankService service) throws RemoteException {
         this.accountID = accountID;
@@ -69,6 +65,17 @@ public class Account extends PortableRemoteObject implements IAccount {
                 '}';
     }
 
+    @Override
+    public void confirm() throws RemoteException {
+        service.update(this);
+    }
+
+    /**
+     * Sets credit.
+     *
+     * @param credit the credit
+     * @throws RemoteException the remote exception
+     */
     public void setCredit(BigDecimal credit) throws RemoteException {
         this.credit = credit;
         if (this.service != null)

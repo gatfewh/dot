@@ -7,8 +7,6 @@ import oops.nwiz.dot.banker.protocol.IBankService;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
-import java.math.BigDecimal;
-
 
 /**
  * The type Command line client.
